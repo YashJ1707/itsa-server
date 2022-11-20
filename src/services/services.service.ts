@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { isEmail, isString, IS_EMAIL } from 'class-validator';
 import { Unsubscribable } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FeedbackDTO, SubscribeDTO, UnsubscribeDTO } from './dto';
@@ -10,6 +11,12 @@ export class ServicesService {
 
   //API to subscribe email
   async subscribeEmail(dto: SubscribeDTO) {
+    if (!isEmail(dto.email)) {
+      return { message: 'Enter valid email', success: false };
+    }
+    if (!isString(dto.name)) {
+      return { message: 'Enter valid name', success: false };
+    }
     try {
       const response = await this.prisma.subscribe.create({
         data: {
@@ -33,6 +40,9 @@ export class ServicesService {
   }
 
   async unsubscribeEmail(dto: UnsubscribeDTO) {
+    if (!isEmail(dto.email)) {
+      return { message: 'Enter valid email', success: false };
+    }
     try {
       const response = await this.prisma.subscribe.delete({
         where: {
@@ -48,6 +58,12 @@ export class ServicesService {
   }
 
   async saveFeedbackToDB(dto: FeedbackDTO) {
+    if (!isEmail(dto.email)) {
+      return { message: 'Enter valid email', success: false };
+    }
+    if (!isString(dto.first_name) || !isString(dto.last_name)) {
+      return { message: 'Enter valid name', success: false };
+    }
     try {
       const response = await this.prisma.feedback.create({
         data: {
